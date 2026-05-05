@@ -1,1 +1,781 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ProcLens</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#FAFAFA;--s:#FFF;--b:#E5E5E5;--b2:#F0F0F0;--t:#0A0A0A;--mu:#737373;--blue:#0066FF;--bs:#EBF3FF;--green:#00AA44;--gs:#EDFAF3;--red:#FF3333;--rs:#FFF0F0;--amber:#FF8800;--as:#FFF7ED;--purple:#7C3AED;--r:10px;--sh:0 1px 3px rgba(0,0,0,.06);}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Geist',sans-serif;background:var(--bg);color:var(--t);min-height:100vh;font-size:15px;}
+nav{position:sticky;top:0;z-index:500;background:rgba(250,250,250,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--b);display:flex;align-items:center;justify-content:space-between;padding:0 1.75rem;height:52px;}
+.brand{display:flex;align-items:center;gap:8px;font-size:.9rem;font-weight:600;letter-spacing:-.02em;}
+.brand-logo{width:28px;height:28px;background:var(--t);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.brand-logo svg{width:16px;height:16px;fill:white;}
+.tab-group{display:flex;gap:2px;background:var(--b2);border-radius:8px;padding:2px;}
+.tab{padding:.3rem 1.1rem;border-radius:6px;font-size:.78rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--mu);font-family:'Geist',sans-serif;transition:all .15s;}
+.tab.on{background:var(--s);color:var(--t);box-shadow:var(--sh);}
+.nav-r{display:flex;align-items:center;gap:.75rem;}
+.pill{display:flex;align-items:center;font-size:.72rem;color:var(--mu);padding:.25rem .65rem;border:1px solid var(--b);border-radius:20px;}
+.dot-g{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;animation:pulse 2s infinite;}
+.dot-a{width:7px;height:7px;border-radius:50%;background:var(--amber);display:inline-block;margin-right:5px;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.mtog{display:flex;background:var(--b2);border-radius:7px;padding:2px;gap:2px;}
+.mb{padding:.25rem .75rem;border-radius:5px;font-size:.72rem;font-weight:500;cursor:pointer;border:none;background:transparent;color:var(--mu);font-family:'Geist',sans-serif;transition:all .15s;}
+.mb.on{background:var(--s);color:var(--t);box-shadow:var(--sh);}
+.btn{padding:.45rem 1rem;border:none;border-radius:7px;font-family:'Geist',sans-serif;font-size:.78rem;font-weight:500;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:5px;}
+.btn-ghost{background:transparent;border:1px solid var(--b);color:var(--t);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-ai{background:linear-gradient(135deg,#667EEA,#764BA2);color:white;}
+.btn-sm{padding:.3rem .65rem;font-size:.72rem;}
+.page{display:none;}.page.on{display:block;}
+.wrap{max-width:1380px;margin:0 auto;padding:1.5rem 1.75rem;}
+.card{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;box-shadow:var(--sh);}
+.clabel{font-size:.68rem;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--mu);margin-bottom:.6rem;display:flex;align-items:center;justify-content:space-between;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem;}
+.g2a{display:grid;grid-template-columns:2fr 1.2fr;gap:1rem;margin-bottom:1rem;}
+.g2b{display:grid;grid-template-columns:1.4fr 1fr;gap:1rem;margin-bottom:1rem;}
+.gf{margin-bottom:1rem;}
+.sv{font-size:1.9rem;font-weight:700;letter-spacing:-.04em;line-height:1;}
+.ss{font-size:.72rem;color:var(--mu);margin-top:4px;}
+.sbar{height:3px;background:var(--b2);border-radius:2px;margin-top:10px;overflow:hidden;}
+.sbar-f{height:100%;border-radius:2px;transition:width .6s;}
+.ch{position:relative;height:160px;}.ch-sm{position:relative;height:130px;}
+.pt{width:100%;border-collapse:collapse;font-size:.78rem;}
+.pt th{text-align:left;padding:.4rem .6rem;font-size:.67rem;font-weight:500;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--b);}
+.pt td{padding:.42rem .6rem;border-bottom:1px solid var(--b2);}
+.pt tr:last-child td{border-bottom:none;}
+.pt tr:hover td{background:var(--bg);}
+.pname{font-weight:500;display:flex;align-items:center;gap:6px;}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.cbw{display:flex;align-items:center;gap:6px;}
+.cb{height:4px;border-radius:2px;min-width:2px;transition:width .4s;}
+.bdg{display:inline-block;padding:1px 6px;border-radius:5px;font-size:.65rem;font-weight:500;}
+.gc{overflow-x:auto;padding-bottom:4px;}
+.gw{position:relative;height:52px;min-width:400px;}
+.gseg{position:absolute;top:4px;height:34px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.67rem;font-weight:500;color:white;white-space:nowrap;overflow:hidden;cursor:pointer;}
+.gseg:hover{opacity:.8;}
+.gtick{position:absolute;bottom:0;font-size:.62rem;color:var(--mu);transform:translateX(-50%);font-family:'Geist Mono',monospace;}
+.gtickl{position:absolute;bottom:12px;width:1px;background:var(--b);height:6px;transform:translateX(-50%);}
+.ag{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;}
+.ac{background:var(--bg);border:1px solid var(--b);border-radius:8px;padding:.75rem;cursor:pointer;}
+.ac.best{background:var(--gs);border-color:#BBF7D0;}
+.an{font-size:.75rem;font-weight:600;margin-bottom:.4rem;display:flex;align-items:center;justify-content:space-between;}
+.ast{display:flex;justify-content:space-between;font-size:.7rem;color:var(--mu);margin-bottom:2px;}
+.ast b{color:var(--t);font-weight:500;}
+.bt{background:var(--green);color:white;font-size:.58rem;padding:1px 5px;border-radius:4px;font-weight:600;}
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px;}
+.ci{background:var(--bg);border:1px solid var(--b);border-radius:5px;padding:4px 6px;font-size:.67rem;}
+.cr{height:3px;background:var(--b);border-radius:2px;overflow:hidden;}
+.cf{height:100%;border-radius:2px;background:var(--blue);transition:width .4s;}
+.aip{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.25rem;box-shadow:var(--sh);}
+.aih{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.ait{display:flex;align-items:center;gap:8px;font-size:.82rem;font-weight:600;}
+.aibdg{background:linear-gradient(135deg,#667EEA,#764BA2);color:white;font-size:.65rem;padding:2px 8px;border-radius:20px;font-weight:500;}
+.aic{font-size:.8rem;line-height:1.7;}
+.aic p{margin-bottom:.6rem;}
+.aip-ph{color:var(--mu);font-size:.8rem;text-align:center;padding:2rem 0;}
+.spin{width:14px;height:14px;border:2px solid var(--b);border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.fstrip{border-top:1px solid var(--b);margin-top:.5rem;padding-top:.75rem;display:flex;justify-content:space-between;font-size:.7rem;color:var(--mu);}
+.hh{display:flex;align-items:center;gap:2rem;padding:1.5rem;background:var(--s);border:1px solid var(--b);border-radius:14px;box-shadow:var(--sh);margin-bottom:1.25rem;}
+.sr{position:relative;width:130px;height:130px;flex-shrink:0;}
+.sr svg{transform:rotate(-90deg);}
+.srbg{fill:none;stroke:var(--b2);stroke-width:10;}
+.srfi{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1s,stroke .5s;}
+.src{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.snum{font-size:2rem;font-weight:800;letter-spacing:-.04em;line-height:1;}
+.slbl{font-size:.65rem;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;}
+.htag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600;margin-top:.5rem;}
+#banner{display:none;position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:600;width:calc(100% - 3rem);max-width:700px;border-radius:12px;padding:1rem 1.25rem;box-shadow:0 8px 30px rgba(0,0,0,.15);}
+.bn-inner{display:flex;align-items:flex-start;gap:1rem;}
+.bn-icon{font-size:1.8rem;flex-shrink:0;}
+.bn-body{flex:1;}
+.bn-title{font-weight:700;font-size:.95rem;margin-bottom:3px;}
+.bn-reason{font-size:.8rem;margin-bottom:.6rem;opacity:.9;}
+.bn-acts{display:flex;flex-wrap:wrap;gap:.4rem;}
+.bab{padding:.3rem .75rem;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;border:2px solid rgba(255,255,255,.4);font-family:'Geist',sans-serif;background:rgba(255,255,255,.2);color:inherit;}
+.bdis{background:none;border:none;cursor:pointer;font-size:1.1rem;opacity:.6;flex-shrink:0;}
+.ap{background:var(--s);border:2px solid var(--b);border-radius:14px;padding:1.25rem;margin-bottom:1.25rem;transition:border-color .5s,background .5s;}
+.ap.good{border-color:#BBF7D0;background:#F9FFFB;}
+.ap.warn{border-color:#FED7AA;background:#FFFDF5;}
+.ap.urg{border-color:#FECACA;background:#FFFAFA;}
+.ap-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;}
+.ap-title{font-weight:700;font-size:.92rem;}
+.ap-sub{font-size:.75rem;color:var(--mu);margin-top:2px;}
+.ap-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.6rem;}
+.ap-item{display:flex;align-items:flex-start;gap:.6rem;background:white;border:1px solid var(--b2);border-radius:8px;padding:.65rem .75rem;}
+.ap-ii{font-size:1.1rem;flex-shrink:0;}
+.ap-it b{display:block;font-size:.8rem;font-weight:600;margin-bottom:2px;}
+.ap-it span{font-size:.73rem;color:var(--mu);line-height:1.4;}
+.utag{font-size:.62rem;font-weight:700;padding:1px 6px;border-radius:4px;display:inline-block;margin-top:4px;}
+.sdelta{font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:20px;}
+.sdelta.dn{background:#FEE2E2;color:var(--red);}
+.sdelta.up{background:var(--gs);color:var(--green);}
+.pc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1.1rem;box-shadow:var(--sh);margin-bottom:.75rem;display:flex;gap:1rem;}
+.pi{font-size:1.6rem;flex-shrink:0;}
+.pb{flex:1;}
+.pt2{font-weight:600;font-size:.9rem;margin-bottom:3px;}
+.pd{font-size:.8rem;color:var(--mu);line-height:1.5;margin-bottom:.6rem;}
+.psev{display:inline-block;padding:2px 8px;border-radius:5px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;}
+.sh{background:#FEE2E2;color:var(--red);}
+.sm{background:var(--as);color:var(--amber);}
+.sl{background:var(--gs);color:var(--green);}
+.fs{background:var(--bg);border:1px solid var(--b2);border-radius:8px;padding:.75rem;margin-top:.5rem;}
+.fst{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--mu);margin-bottom:.5rem;}
+.fsi{display:flex;gap:.6rem;align-items:flex-start;margin-bottom:.4rem;font-size:.8rem;line-height:1.5;}
+.fsn{width:18px;height:18px;border-radius:50%;background:var(--t);color:white;display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0;margin-top:1px;}
+.qwcard{border:1px solid var(--b);border-radius:9px;margin-bottom:.5rem;overflow:hidden;background:var(--s);}
+.qwcard:hover{border-color:var(--blue);}
+.qwhead{display:flex;align-items:center;gap:.75rem;padding:.75rem;cursor:pointer;}
+.qwi{font-size:1.1rem;flex-shrink:0;}
+.qwt{flex:1;}
+.qwt b{display:block;font-size:.82rem;font-weight:600;margin-bottom:1px;}
+.qwt span{font-size:.75rem;color:var(--mu);}
+.qwimp{font-size:.7rem;font-weight:600;padding:2px 7px;border-radius:5px;background:var(--gs);color:var(--green);}
+.qwarr{font-size:.65rem;color:var(--mu);margin-left:.3rem;transition:transform .2s;}
+.qwarr.open{transform:rotate(180deg);}
+.qwbody{display:none;padding:.75rem;border-top:1px solid var(--b2);background:var(--bg);}
+.qwabtn{display:block;width:100%;margin-top:.75rem;padding:.5rem;background:var(--t);color:white;border:none;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Geist',sans-serif;text-align:center;}
+.qwabtn:hover{background:#333;}
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem;}
+.tc{background:var(--s);border:1px solid var(--b);border-radius:var(--r);padding:1rem;box-shadow:var(--sh);}
+.te{font-size:1.4rem;margin-bottom:.5rem;}
+.tt{font-size:.82rem;font-weight:600;margin-bottom:.3rem;}
+.tx{font-size:.75rem;color:var(--mu);line-height:1.5;}
+.hog{display:flex;align-items:center;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--b2);}
+.hog:last-child{border-bottom:none;}
+.hoge{font-size:1.2rem;width:28px;text-align:center;flex-shrink:0;}
+.hogn{flex:1;}
+.hogn b{display:block;font-size:.82rem;font-weight:500;}
+.hogn span{font-size:.72rem;color:var(--mu);}
+.hogb{width:80px;}
+.hogbg{height:5px;background:var(--b2);border-radius:3px;overflow:hidden;}
+.hogbf{height:100%;border-radius:3px;transition:width .5s;}
+.hogp{font-size:.72rem;font-weight:600;text-align:right;margin-top:2px;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-thumb{background:var(--b);border-radius:3px;}
+.fade{animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+</style>
+</head>
+<body>
+
+<div id="banner">
+  <div class="bn-inner">
+    <div class="bn-icon" id="bnIcon">⚠️</div>
+    <div class="bn-body">
+      <div class="bn-title" id="bnTitle"></div>
+      <div class="bn-reason" id="bnReason"></div>
+      <div class="bn-acts" id="bnActs"></div>
+    </div>
+    <button class="bdis" onclick="hideBanner()">✕</button>
+  </div>
+</div>
+
+<nav>
+  <div class="brand">
+    <div class="brand-logo"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg></div>
+    ProcLens
+  </div>
+  <div class="tab-group">
+    <button class="tab on" id="t1" onclick="goPage('health','t1')">🩺 PC Health</button>
+    <button class="tab" id="t2" onclick="goPage('dashboard','t2')">📊 Dashboard</button>
+  </div>
+  <div class="nav-r">
+    <div class="pill" id="livePill"><span class="dot-g"></span>Live</div>
+    <div class="mtog">
+      <button class="mb on" id="m1" onclick="setMode('live','m1')">Live</button>
+      <button class="mb" id="m2" onclick="setMode('sim','m2')">Simulation</button>
+    </div>
+    <button class="btn btn-ghost btn-sm" id="pauseBtn" onclick="togglePoll()">⏸ Pause</button>
+  </div>
+</nav>
+
+<!-- PC HEALTH PAGE -->
+<div class="page on" id="page-health">
+<div class="wrap">
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-family:'Instrument Serif',serif;font-size:1.75rem;font-weight:400;letter-spacing:-.02em;">Your PC Health <em style="font-style:italic;color:var(--mu);">Report</em></h1>
+    <p style="color:var(--mu);font-size:.82rem;margin-top:4px;">Plain English — no tech jargon. Here's what's happening and exactly what to do about it.</p>
+  </div>
+
+  <div class="ap good" id="apanel">
+    <div class="ap-head">
+      <div><div class="ap-title" id="apTitle">✅ Your PC is running fine</div><div class="ap-sub" id="apSub">Last checked: just now</div></div>
+      <div id="apDelta"></div>
+    </div>
+    <div class="ap-items" id="apItems"></div>
+  </div>
+
+  <div class="hh">
+    <div class="sr">
+      <svg width="130" height="130" viewBox="0 0 130 130">
+        <circle class="srbg" cx="65" cy="65" r="55"/>
+        <circle class="srfi" id="ring" cx="65" cy="65" r="55" stroke-dasharray="345.4" stroke-dashoffset="345.4" stroke="var(--green)"/>
+      </svg>
+      <div class="src"><div class="snum" id="snum">—</div><div class="slbl">/ 100</div></div>
+    </div>
+    <div>
+      <h2 style="font-family:'Instrument Serif',serif;font-size:1.4rem;font-weight:400;margin-bottom:.3rem;" id="hhead">Checking your PC...</h2>
+      <p style="font-size:.85rem;color:var(--mu);line-height:1.6;max-width:500px;" id="hdesc">Gathering data from your system.</p>
+      <div class="htag" id="htag" style="background:var(--b2);color:var(--mu);">Loading</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+    <div>
+      <div style="font-size:.78rem;font-weight:600;margin-bottom:.75rem;">⚠️ Issues Found</div>
+      <div id="problems"><div style="text-align:center;padding:2rem;color:var(--mu);font-size:.8rem;">Scanning...</div></div>
+    </div>
+    <div>
+      <div style="font-size:.78rem;font-weight:600;margin-bottom:.75rem;">⚡ Quick Wins — Click to expand</div>
+      <div id="qwins"><div style="text-align:center;padding:1rem;color:var(--mu);font-size:.8rem;">Loading...</div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem;">
+    <div class="card">
+      <div style="font-size:.78rem;font-weight:600;margin-bottom:.75rem;">💻 Resources Occupying Your PC</div>
+      <div id="hogs">Loading...</div>
+    </div>
+    <div class="card">
+      <div style="font-size:.78rem;font-weight:600;margin-bottom:.75rem;">📈 Live Health Trend</div>
+      <div class="ch-sm"><canvas id="hChart"></canvas></div>
+    </div>
+  </div>
+
+  <div style="font-size:.78rem;font-weight:600;margin-bottom:.75rem;">💡 Smart Habits</div>
+  <div class="tg">
+    <div class="tc"><div class="te">🔄</div><div class="tt">Restart Weekly</div><div class="tx">Clears RAM and lets your PC start fresh — like a good night's sleep.</div></div>
+    <div class="tc"><div class="te">📱</div><div class="tt">Close Unused Apps</div><div class="tx">Every open app uses memory even when you're not looking at it.</div></div>
+    <div class="tc"><div class="te">🧹</div><div class="tt">Clear Your Downloads</div><div class="tx">Sort through your Downloads folder monthly and delete old files.</div></div>
+    <div class="tc"><div class="te">🚫</div><div class="tt">Fewer Startup Apps</div><div class="tx">Task Manager → Startup Apps → disable what you don't need at boot.</div></div>
+    <div class="tc"><div class="te">🌡️</div><div class="tt">Keep It Cool</div><div class="tx">Heat slows your CPU down to protect itself. Keep vents clear.</div></div>
+    <div class="tc"><div class="te">⬆️</div><div class="tt">Keep Software Updated</div><div class="tx">Updates include speed improvements and security fixes.</div></div>
+  </div>
+
+  <div class="aip">
+    <div class="aih">
+      <div class="ait"><span>🤖</span><span>Ask AI — Why is my PC slow?</span><span class="aibdg">Groq</span></div>
+      <button class="btn btn-ai" onclick="askFriendlyAI()" id="haib">⚡ Get Personalized Advice</button>
+    </div>
+    <div id="haic"><div class="aip-ph">Click the button and AI will look at your PC right now and tell you <strong>exactly</strong> what to do to make it faster.</div></div>
+  </div>
+</div>
+</div>
+
+<!-- DASHBOARD PAGE -->
+<div class="page" id="page-dashboard">
+<div class="wrap">
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-family:'Instrument Serif',serif;font-size:1.75rem;font-weight:400;letter-spacing:-.02em;">Process Intelligence <em style="font-style:italic;color:var(--mu);">Dashboard</em></h1>
+    <p style="color:var(--mu);font-size:.82rem;margin-top:4px;">Real-time OS internals — scheduling, memory, and AI-powered diagnostics</p>
+  </div>
+  <div class="g4">
+    <div class="card"><div class="clabel">CPU Usage <span id="cpuCores">—</span></div><div class="sv" id="sCPU">—%</div><div class="ss" id="sCPUs">Loading...</div><div class="sbar"><div class="sbar-f" id="cpuBar" style="background:var(--blue);width:0%"></div></div></div>
+    <div class="card"><div class="clabel">Memory <span id="memTotal">—</span></div><div class="sv" id="sMem">—%</div><div class="ss" id="sMemS">Loading...</div><div class="sbar"><div class="sbar-f" id="memBar" style="background:var(--purple);width:0%"></div></div></div>
+    <div class="card"><div class="clabel">Processes</div><div class="sv" id="sProcs">—</div><div class="ss" id="sProcsS">Loading...</div><div class="sbar"><div class="sbar-f" id="procsBar" style="background:var(--green);width:40%"></div></div></div>
+    <div class="card"><div class="clabel">Swap Memory</div><div class="sv" id="sSwap">—%</div><div class="ss" id="sSwapS">Loading...</div><div class="sbar"><div class="sbar-f" id="swapBar" style="background:var(--amber);width:0%"></div></div></div>
+  </div>
+  <div class="g2a">
+    <div class="card"><div class="clabel">CPU & Memory Over Time <span id="hCount">0 snapshots</span></div><div class="ch"><canvas id="tlChart"></canvas></div></div>
+    <div class="card"><div class="clabel">Per-Core Utilization</div><div id="coresGrid" class="cg"></div></div>
+  </div>
+  <div class="gf card">
+    <div class="clabel" style="margin-bottom:.8rem;">Top Processes <span id="lastUpd">—</span></div>
+    <div style="overflow-x:auto;">
+      <table class="pt">
+        <thead><tr><th>Process</th><th>PID</th><th>Status</th><th>CPU %</th><th>Memory</th><th>Threads</th><th>I/O Read</th><th>PPID</th></tr></thead>
+        <tbody id="ptBody"><tr><td colspan="8" style="text-align:center;color:var(--mu);padding:2rem;">Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="g2b">
+    <div class="card">
+      <div class="clabel" style="margin-bottom:.8rem;">Scheduling Comparison <button class="btn btn-ghost btn-sm" onclick="loadCompare()">↻ Refresh</button></div>
+      <div id="cmpResult"><div style="color:var(--mu);font-size:.78rem;padding:1rem 0;">Click Refresh to compare algorithms</div></div>
+      <div id="ganttSec" style="display:none;margin-top:1rem;">
+        <div class="clabel" style="margin-bottom:.5rem;">Gantt Chart — <span id="gLabel">FCFS</span></div>
+        <div class="gc"><div class="gw" id="gWrap"></div></div>
+        <div style="display:flex;gap:.4rem;margin-top:.5rem;flex-wrap:wrap;" id="gBtns"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="clabel">Process State Distribution</div>
+      <div class="ch-sm"><canvas id="stChart"></canvas></div>
+      <div style="margin-top:.75rem;" id="stList"></div>
+    </div>
+  </div>
+  <div class="aip">
+    <div class="aih">
+      <div class="ait"><span>🤖</span><span>AI System Diagnostics</span><span class="aibdg">Groq</span></div>
+      <button class="btn btn-ai" onclick="askTechAI()" id="taib">⚡ Diagnose System Now</button>
+    </div>
+    <div id="taic"><div class="aip-ph">Click <strong>"Diagnose System Now"</strong> to get an AI-powered OS analysis</div></div>
+    <div class="fstrip"><span id="aiTs">Not yet analyzed</span><span id="modeLabel" style="color:var(--mu);">Mode: Live</span></div>
+  </div>
+</div>
+</div>
+
+<script>
+var mode='live', polling=true, timer=null, lastSnap=null, cmpData=null;
+var prevScore=null, bannerOff=false, bnTimer=null, hHist=[];
+
+var PC=['#0066FF','#FF3333','#00AA44','#FF8800','#7C3AED','#0891B2','#DB2777','#EA580C'];
+var SC={running:'#00AA44',sleeping:'#0066FF',idle:'#A3A3A3',zombie:'#FF3333',stopped:'#FF8800','disk-sleep':'#7C3AED',dead:'#737373'};
+function pc(i){return PC[i%PC.length];}
+function fmt(n){return n>=1073741824?(n/1073741824).toFixed(1)+'GB':n>=1048576?(n/1048576).toFixed(1)+'MB':n>=1024?(n/1024).toFixed(1)+'KB':n+'B';}
+
+function goPage(name,tid){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('page-'+name).classList.add('on');
+  document.getElementById(tid).classList.add('on');
+}
+
+function setMode(m,mid){
+  mode=m;
+  document.querySelectorAll('.mb').forEach(function(b){b.classList.remove('on');});
+  document.getElementById(mid).classList.add('on');
+  document.getElementById('livePill').innerHTML=m==='live'?'<span class="dot-g"></span>Live':'<span class="dot-a"></span>Simulation';
+  var ml=document.getElementById('modeLabel');
+  if(ml) ml.textContent='Mode: '+(m==='live'?'Live':'Simulation');
+  fetchSnap();
+}
+
+function togglePoll(){
+  polling=!polling;
+  document.getElementById('pauseBtn').textContent=polling?'⏸ Pause':'▶ Resume';
+  if(polling) schedNext();
+}
+
+function schedNext(){
+  if(timer) clearTimeout(timer);
+  if(polling) timer=setTimeout(fetchSnap,2000);
+}
+
+var tlCtx=document.getElementById('tlChart').getContext('2d');
+var tlChart=new Chart(tlCtx,{type:'line',data:{labels:[],datasets:[
+  {label:'CPU %',data:[],borderColor:'#0066FF',backgroundColor:'rgba(0,102,255,.06)',tension:.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'},
+  {label:'MEM %',data:[],borderColor:'#7C3AED',backgroundColor:'rgba(124,58,237,.04)',tension:.4,pointRadius:0,borderWidth:2,fill:true,yAxisID:'y'}
+]},options:{responsive:true,maintainAspectRatio:false,animation:{duration:300},interaction:{mode:'index',intersect:false},
+  plugins:{legend:{labels:{font:{family:'Geist',size:11},boxWidth:10,padding:12}}},
+  scales:{x:{ticks:{display:false},grid:{display:false},border:{display:false}},
+    y:{min:0,max:100,ticks:{font:{family:'Geist Mono',size:10},color:'#A3A3A3',callback:function(v){return v+'%';}},grid:{color:'#F0F0F0'},border:{display:false}}}}});
+
+var stCtx=document.getElementById('stChart').getContext('2d');
+var stChart=new Chart(stCtx,{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:[],borderWidth:2,borderColor:'#FFF',hoverOffset:4}]},
+  options:{responsive:true,maintainAspectRatio:false,cutout:'68%',plugins:{legend:{display:false}},animation:{duration:400}}});
+
+var hChartInst=null;
+function initHealthChart(){
+  if(hChartInst) return;
+  var hCtx=document.getElementById('hChart');
+  if(!hCtx) return;
+  hChartInst=new Chart(hCtx.getContext('2d'),{type:'line',data:{labels:[],datasets:[{label:'Health',data:[],borderColor:'#00AA44',backgroundColor:'rgba(0,170,68,.15)',tension:.4,pointRadius:0,borderWidth:2,fill:true}]},
+    options:{responsive:true,maintainAspectRatio:false,animation:{duration:500},plugins:{legend:{display:false}},
+      scales:{x:{ticks:{display:false},grid:{display:false},border:{display:false}},
+        y:{min:0,max:100,ticks:{font:{size:10},color:'#A3A3A3',stepSize:25},grid:{color:'#F0F0F0'},border:{display:false}}}}});
+}
+
+function fetchSnap(){
+  fetch('/api/snapshot?mode='+mode)
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.json();
+    })
+    .then(function(d){
+      lastSnap=d;
+      if(!d.history) d.history=[];
+      if(!d.states) d.states={};
+      if(!d.procs) d.procs=[];
+      try{ updateDash(d); } catch(e){ console.error('updateDash error:',e.message,e); }
+      try{ updateHealth(d); } catch(e){ console.error('updateHealth error:',e.message,e); }
+    })
+    .catch(function(e){
+      console.error('fetchSnap error:',e);
+      // show error in UI so user knows
+      var el=document.getElementById('problems');
+      if(el) el.innerHTML='<div style="color:var(--red);font-size:.8rem;padding:1rem;">Connection error: '+e.message+'. Is Flask running?</div>';
+    });
+  schedNext();
+}
+
+function updateDash(d){
+  var cpu=d.cpu.total, m=d.mem;
+  document.getElementById('sCPU').textContent=cpu.toFixed(1)+'%';
+  document.getElementById('cpuCores').textContent=d.cpu.count+' cores';
+  document.getElementById('sCPUs').textContent=(d.cpu.cores?d.cpu.cores.filter(function(c){return c>50;}).length:0)+' cores >50%';
+  document.getElementById('cpuBar').style.cssText='width:'+cpu+'%;background:'+(cpu>80?'var(--red)':cpu>60?'var(--amber)':'var(--blue)');
+  document.getElementById('sMem').textContent=m.pct+'%';
+  document.getElementById('memTotal').textContent=m.total+' MB total';
+  document.getElementById('sMemS').textContent=m.used+' MB used · '+m.avail+' MB free';
+  document.getElementById('memBar').style.cssText='width:'+m.pct+'%;background:'+(m.pct>85?'var(--red)':m.pct>65?'var(--amber)':'var(--purple)');
+  document.getElementById('sProcs').textContent=d.proc_count;
+  document.getElementById('sProcsS').textContent=(d.states&&d.states.running?d.states.running:0)+' running · '+(d.states&&d.states.sleeping?d.states.sleeping:0)+' sleeping';
+  document.getElementById('sSwap').textContent=m.swap_pct+'%';
+  document.getElementById('sSwapS').textContent=m.swap_used+' / '+m.swap_total+' MB';
+  document.getElementById('swapBar').style.width=m.swap_pct+'%';
+  var hist=d.history||[];
+  tlChart.data.labels=hist.map(function(_,i){return i;});
+  tlChart.data.datasets[0].data=hist.map(function(h){return h.cpu;});
+  tlChart.data.datasets[1].data=hist.map(function(h){return h.mem;});
+  tlChart.update('none');
+  document.getElementById('hCount').textContent=hist.length+' snapshots';
+  document.getElementById('coresGrid').innerHTML=(d.cpu.cores||[]).map(function(c,i){
+    return '<div class="ci"><div style="color:var(--mu);margin-bottom:2px;font-size:.67rem;">Core '+i+'</div>'+
+      '<div style="font-size:.72rem;font-weight:600;margin-bottom:3px;">'+c.toFixed(0)+'%</div>'+
+      '<div class="cr"><div class="cf" style="width:'+c+'%;background:'+(c>80?'var(--red)':c>60?'var(--amber)':'var(--blue)')+'"></div></div></div>';
+  }).join('');
+  document.getElementById('lastUpd').textContent='Updated '+new Date().toLocaleTimeString();
+  document.getElementById('ptBody').innerHTML=d.procs.map(function(p){
+    var sc=SC[p.status]||'#A3A3A3';
+    var w=Math.min(p.cpu*2,100);
+    var sBg=p.status==='running'?'var(--bs)':'var(--b2)';
+    var sCol=p.status==='running'?'var(--green)':p.status==='sleeping'?'var(--blue)':'var(--mu)';
+    return '<tr><td><div class="pname"><span class="sdot" style="background:'+sc+'"></span>'+p.name+'</div></td>'+
+      '<td style="color:var(--mu);font-family:monospace;font-size:.72rem">'+p.pid+'</td>'+
+      '<td><span class="bdg" style="background:'+sBg+';color:'+sCol+'">'+p.status+'</span></td>'+
+      '<td><div class="cbw"><div class="cb" style="width:'+w+'px;background:'+(p.cpu>20?'var(--red)':p.cpu>10?'var(--amber)':'var(--blue)')+'"></div>'+
+      '<span style="font-family:monospace;font-size:.72rem">'+p.cpu+'%</span></div></td>'+
+      '<td style="font-size:.72rem">'+p.mem_pct+'%</td>'+
+      '<td style="color:var(--mu)">'+p.threads+'</td>'+
+      '<td style="font-size:.72rem;color:var(--mu)">'+fmt(p.io_r||0)+'</td>'+
+      '<td style="font-size:.72rem;color:var(--mu)">'+p.ppid+'</td></tr>';
+  }).join('');
+  var sL=Object.keys(d.states||{}), sD=sL.map(function(k){return d.states[k];}), sC=sL.map(function(k){return SC[k]||'#E5E5E5';});
+  stChart.data.labels=sL; stChart.data.datasets[0].data=sD; stChart.data.datasets[0].backgroundColor=sC;
+  stChart.update('none');
+  document.getElementById('stList').innerHTML=sL.map(function(k,i){
+    return '<div style="display:flex;justify-content:space-between;font-size:.72rem;margin-bottom:3px;">'+
+      '<span style="display:flex;align-items:center;gap:5px;"><span style="width:7px;height:7px;border-radius:50%;background:'+sC[i]+';display:inline-block;"></span>'+k+'</span>'+
+      '<b>'+sD[i]+'</b></div>';
+  }).join('');
+}
+
+function calcScore(d){
+  var s=100, cpu=d.cpu.total, m=d.mem.pct, sw=d.mem.swap_pct, z=(d.states&&d.states.zombie)||0;
+  if(cpu>90)s-=30; else if(cpu>75)s-=20; else if(cpu>50)s-=10;
+  if(m>90)s-=25; else if(m>75)s-=15; else if(m>60)s-=8;
+  if(sw>50)s-=20; else if(sw>20)s-=10; else if(sw>5)s-=4;
+  s-=z*3;
+  return Math.max(0,Math.min(100,Math.round(s)));
+}
+
+function scoreInfo(s){
+  if(s>=85) return{label:'Excellent',color:'#00AA44',bg:'#EDFAF3',headline:'Your PC is running great! 🎉',desc:'Everything looks healthy. Your computer has plenty of resources and is not under any stress right now.'};
+  if(s>=65) return{label:'Good',color:'#16A34A',bg:'#DCFCE7',headline:'Your PC is doing well 👍',desc:'Things are mostly fine, but there are a couple of small things you could improve to make it run even smoother.'};
+  if(s>=45) return{label:'Fair',color:'#D97706',bg:'#FFF7ED',headline:'Your PC is a bit stressed 😅',desc:'Your computer is working harder than it should be. Follow the fixes below to speed things up.'};
+  if(s>=25) return{label:'Poor',color:'#DC2626',bg:'#FEE2E2',headline:"Your PC is struggling 😓",desc:"Your computer doesn't have enough resources right now. Close some apps immediately."};
+  return{label:'Critical',color:'#991B1B',bg:'#FEE2E2',headline:'Your PC needs help right now! 🚨',desc:'Your computer is severely overloaded. Close everything you can immediately.'};
+}
+
+function updateHealth(d){
+  initHealthChart();
+  var score=calcScore(d), info=scoreInfo(score);
+  var cpu=d.cpu.total, mem=d.mem.pct, swap=d.mem.swap_pct;
+  var top=d.procs[0];
+  var topM=d.procs.slice().sort(function(a,b){return b.mem_pct-a.mem_pct;})[0];
+
+  document.getElementById('ring').style.strokeDashoffset=345.4-(score/100)*345.4;
+  document.getElementById('ring').style.stroke=info.color;
+  document.getElementById('snum').textContent=score;
+  document.getElementById('snum').style.color=info.color;
+  document.getElementById('hhead').textContent=info.headline;
+  document.getElementById('hdesc').textContent=info.desc;
+  var tag=document.getElementById('htag');
+  tag.textContent=info.label; tag.style.background=info.bg; tag.style.color=info.color;
+
+  hHist.push(score); if(hHist.length>30) hHist.shift();
+  if(hChartInst) {
+    hChartInst.data.labels=hHist.map(function(_,i){return i;});
+    hChartInst.data.datasets[0].data=hHist.slice();
+    hChartInst.data.datasets[0].borderColor=info.color;
+    hChartInst.data.datasets[0].backgroundColor=info.color+'33';
+    hChartInst.update();
+  }
+
+  var probs=[];
+  if(cpu>75) probs.push({icon:'🔥',sev:'high',title:cpu>90?'Your CPU is maxed out':'Your CPU is working very hard',
+    desc:'Your processor is at '+cpu.toFixed(0)+'% capacity'+(top?' — mainly because of "'+top.name+'"':'')+'. This makes everything feel sluggish.',
+    fixes:['Close "'+(top?top.name:'the heaviest app')+'" if you don\'t need it right now','Press Ctrl+Shift+Esc → find heavy app → click "End Task"','Avoid running multiple heavy tasks at the same time']});
+  if(mem>75) probs.push({icon:'🧠',sev:mem>88?'high':'med',title:mem>88?'You are almost out of memory':'Your memory is getting full',
+    desc:mem+'% of your RAM is used'+(topM?' — "'+topM.name+'" is using '+topM.mem_pct.toFixed(1)+'%':'')+'. When RAM is full your PC slows down.',
+    fixes:['Close "'+(topM?topM.name:'the biggest app')+'" or reduce its tabs/windows','Close browser tabs you are not actively reading','Restart apps that have been open for many days']});
+  if(swap>10) probs.push({icon:'💾',sev:swap>40?'high':'med',title:'Your PC is using emergency memory',
+    desc:'Your RAM is full so your PC is borrowing space from your hard drive. Hard drives are 100x slower than RAM — this is why everything lags.',
+    fixes:['Close as many apps as possible right now','Restart your browser — it is usually the biggest memory user','Consider upgrading your RAM if this happens often']});
+  var zombies=(d.states&&d.states.zombie)||0;
+  if(zombies>0) probs.push({icon:'🧟',sev:'low',title:zombies+' zombie process'+(zombies>1?'es':'')+' found',
+    desc:'A zombie process is an app that crashed but did not fully close. Usually harmless but worth cleaning up.',
+    fixes:['Restart your computer to clear all zombie processes','If a specific app keeps crashing, try reinstalling it']});
+  if(probs.length===0) probs.push({icon:'✅',sev:'low',title:'No major issues found',
+    desc:'Your PC looks healthy! All resources are within normal range.',
+    fixes:['Keep it up — restart your PC weekly to keep it running smoothly','Close apps you are not using to maintain this good performance']});
+
+  document.getElementById('problems').innerHTML=probs.map(function(p){
+    var sevClass=p.sev==='high'?'sh':p.sev==='med'?'sm':'sl';
+    var sevLabel=p.sev==='high'?'🔴 Urgent':p.sev==='med'?'🟡 Moderate':'🟢 Minor';
+    var fixHtml=p.fixes.map(function(f,i){
+      return '<div class="fsi"><div class="fsn">'+(i+1)+'</div><div>'+f+'</div></div>';
+    }).join('');
+    return '<div class="pc"><div class="pi">'+p.icon+'</div><div class="pb">'+
+      '<span class="psev '+sevClass+'">'+sevLabel+'</span>'+
+      '<div class="pt2">'+p.title+'</div>'+
+      '<div class="pd">'+p.desc+'</div>'+
+      '<div class="fs"><div class="fst">✅ How to fix it</div>'+fixHtml+'</div>'+
+      '</div></div>';
+  }).join('');
+
+  var WINS=[
+    {icon:'🔴',title:'Close the heaviest app',desc:top?'"'+top.name+'" is using '+top.cpu+'% CPU':'No major CPU hog right now',impact:'Big impact',
+     steps:['Press Ctrl + Shift + Esc on your keyboard','Find "'+( top?top.name:'the app at the top')+'" in the list','Click it once, then click "End Task" button'],
+     actionLabel:'Open Task Manager',actionType:'taskmgr'},
+    {icon:'🌐',title:'Close extra browser tabs',desc:'Each open tab uses ~100MB of memory',impact:'Medium impact',
+     steps:['Look at your browser tabs at the top of the screen','Close any tabs you are not actively reading right now','Bookmark pages first if you want to come back to them'],
+     actionLabel:'Learn how to bookmark',actionType:'url',actionUrl:'https://support.google.com/chrome/answer/188842'},
+    {icon:'🔄',title:'Restart your PC',desc:'Clears all memory and resets everything fresh',impact:'Big impact',
+     steps:['Save all your open documents first','Click the Start button (Windows icon, bottom left)','Click the Power icon then click "Restart"','Wait 1-2 minutes for it to come back on'],
+     actionLabel:'Microsoft restart guide',actionType:'url',actionUrl:'https://support.microsoft.com/en-us/windows'},
+    {icon:'🚀',title:'Disable startup apps',desc:'Apps that secretly slow down your PC at boot',impact:'Medium impact',
+     steps:['Press Ctrl + Shift + Esc to open Task Manager','Click the "Startup apps" tab at the top','Right-click any app you do not need → click "Disable"','Restart your PC to see the improvement'],
+     actionLabel:'Open Task Manager',actionType:'taskmgr'},
+    {icon:'🧹',title:'Clear junk temp files',desc:'Old temp files slow down your PC over time',impact:'Small impact',
+     steps:['Press Windows key + R on your keyboard','Type the word: temp — then press Enter','Select all files with Ctrl + A then press Delete','Skip any file that says "in use" — that is fine'],
+     actionLabel:'What are temp files?',actionType:'url',actionUrl:'https://support.microsoft.com/en-us/windows/free-up-drive-space-in-windows-85529ccb-c365-490d-b548-831022bc9b32'}
+  ];
+
+  // remember which cards are open before re-render
+  var openCards={};
+  for(var qi=0;qi<5;qi++){
+    var qb=document.getElementById('qwb'+qi);
+    if(qb && qb.style.display==='block') openCards[qi]=true;
+  }
+
+  document.getElementById('qwins').innerHTML=WINS.map(function(w,i){
+    var stepsHtml=w.steps.map(function(s,j){
+      return '<div class="fsi"><div class="fsn">'+(j+1)+'</div><div>'+s+'</div></div>';
+    }).join('');
+    return '<div class="qwcard" id="qwc'+i+'">'+
+      '<div class="qwhead" onclick="toggleQW('+i+')">'+
+      '<div class="qwi">'+w.icon+'</div>'+
+      '<div class="qwt"><b>'+w.title+'</b><span>'+w.desc+'</span></div>'+
+      '<div style="display:flex;align-items:center;gap:.4rem;">'+
+      '<span class="qwimp">'+w.impact+'</span>'+
+      '<span class="qwarr" id="qwa'+i+'">▼</span>'+
+      '</div></div>'+
+      '<div class="qwbody" id="qwb'+i+'">'+
+      '<div class="fst">📋 Steps to do this:</div>'+stepsHtml+
+      '<button class="qwabtn" id="qwbtn'+i+'" onclick="doWinAction('+i+')">'+w.actionLabel+' →</button>'+
+      '</div></div>';
+  }).join('');
+
+  // restore open quick win cards
+  Object.keys(openCards).forEach(function(qi){
+    var body=document.getElementById('qwb'+qi);
+    var arr=document.getElementById('qwa'+qi);
+    if(body){ body.style.display='block'; }
+    if(arr){ arr.className='qwarr open'; }
+  });
+
+  document.getElementById('hogs').innerHTML=d.procs.slice(0,5).map(function(p,i){
+    var emojis=['🥇','🥈','🥉','4️⃣','5️⃣'];
+    return '<div class="hog">'+
+      '<div class="hoge">'+emojis[i]+'</div>'+
+      '<div class="hogn"><b>'+p.name+'</b><span>Using '+p.mem_pct.toFixed(1)+'% memory</span></div>'+
+      '<div class="hogb">'+
+      '<div class="hogbg"><div class="hogbf" style="width:'+Math.min(p.cpu*2,100)+'%;background:'+(p.cpu>20?'var(--red)':p.cpu>10?'var(--amber)':'var(--blue)')+'"></div></div>'+
+      '<div class="hogp" style="color:'+(p.cpu>20?'var(--red)':p.cpu>10?'var(--amber)':'var(--mu)')+'">CPU '+p.cpu+'%</div>'+
+      '</div></div>';
+  }).join('');
+
+  updateActionPanel(score,d);
+  if(prevScore!==null && (prevScore-score)>=8) showBanner(score,prevScore,d);
+  prevScore=score;
+}
+
+var WIN_ACTIONS=[
+  {type:'taskmgr'},
+  {type:'url',url:'https://support.google.com/chrome/answer/188842'},
+  {type:'url',url:'https://support.microsoft.com/en-us/windows'},
+  {type:'taskmgr'},
+  {type:'url',url:'https://support.microsoft.com/en-us/windows/free-up-drive-space-in-windows-85529ccb-c365-490d-b548-831022bc9b32'}
+];
+
+function toggleQW(i){
+  var body=document.getElementById('qwb'+i);
+  var arr=document.getElementById('qwa'+i);
+  var open=body.style.display==='block';
+  body.style.display=open?'none':'block';
+  arr.className='qwarr'+(open?'':' open');
+}
+
+function doWinAction(i){
+  var a=WIN_ACTIONS[i];
+  if(a.type==='taskmgr'){
+    alert('To open Task Manager:\n\n1. Press Ctrl + Shift + Esc on your keyboard\n   OR\n2. Right-click the taskbar at the bottom of your screen\n3. Click "Task Manager"\n\nOnce open, find the heavy app and click "End Task"');
+  } else if(a.type==='url'){
+    window.open(a.url,'_blank');
+  }
+}
+
+function updateActionPanel(score,d){
+  var panel=document.getElementById('apanel');
+  var cpu=d.cpu.total, mem=d.mem.pct, swap=d.mem.swap_pct;
+  var top=d.procs[0], topM=d.procs.slice().sort(function(a,b){return b.mem_pct-a.mem_pct;})[0];
+  var now=new Date().toLocaleTimeString();
+  var cls,title,actions=[];
+  if(prevScore!==null){
+    var delta=score-prevScore;
+    if(Math.abs(delta)>=3) document.getElementById('apDelta').innerHTML='<span class="sdelta '+(delta<0?'dn':'up')+'">'+(delta>0?'▲':'▼')+Math.abs(delta)+' pts</span>';
+    else document.getElementById('apDelta').innerHTML='';
+  }
+  if(score>=80){
+    cls='good'; title='✅ Your PC is running well — no action needed right now';
+    actions=[{icon:'💡',label:'Good habit reminder',text:'Close apps you are not using to keep things fast',urgency:'',uc:''},
+             {icon:'🔄',label:'Weekly restart reminder',text:'A weekly restart keeps your PC fresh and fast',urgency:'',uc:''}];
+  } else if(score>=60){
+    cls='warn'; title='🟡 Mild slowdown — a few quick fixes will help';
+    if(cpu>50) actions.push({icon:'🔥',label:'Close "'+( top?top.name:'heavy app')+'"',text:'Using '+cpu.toFixed(0)+'% of your processor',urgency:'Do this now',uc:'#D97706'});
+    if(mem>65) actions.push({icon:'🌐',label:'Close some browser tabs',text:'Memory is '+mem+'% full — each tab adds ~100MB',urgency:'Recommended',uc:'#D97706'});
+    actions.push({icon:'🔄',label:'Restart your PC tonight',text:'Clears everything and gives your PC a fresh start',urgency:'Tonight',uc:'#6B7280'});
+  } else if(score>=40){
+    cls='warn'; title='🟠 Your PC is under pressure — take action soon';
+    if(top&&top.cpu>20) actions.push({icon:'🔴',label:'Force-quit "'+top.name+'"',text:'Consuming '+top.cpu+'% CPU — that is too much',urgency:'Do this now',uc:'#DC2626'});
+    if(mem>75) actions.push({icon:'🧠',label:'Free up memory now',text:mem+'% RAM used — close big apps immediately',urgency:'Urgent',uc:'#DC2626'});
+    if(swap>5) actions.push({icon:'💾',label:'PC is using slow backup memory',text:'Close apps to stop this — it makes everything lag',urgency:'Fix now',uc:'#DC2626'});
+    actions.push({icon:'🔄',label:'Restart as soon as possible',text:'Will fix most of these issues instantly',urgency:'Important',uc:'#D97706'});
+  } else {
+    cls='urg'; title='🔴 Your PC needs immediate help — do these now';
+    if(top) actions.push({icon:'🚨',label:'Close "'+top.name+'" immediately',text:'Using '+top.cpu+'% CPU — main problem',urgency:'Do this FIRST',uc:'#DC2626'});
+    actions.push({icon:'🔴',label:'Close ALL apps you can',text:'Everything except what you absolutely need',urgency:'Right now',uc:'#DC2626'});
+    actions.push({icon:'🔄',label:'Restart your computer now',text:'Save your work first, then restart',urgency:'Most important',uc:'#DC2626'});
+  }
+  panel.className='ap '+cls;
+  document.getElementById('apTitle').textContent=title;
+  document.getElementById('apSub').textContent='Last checked: '+now;
+  document.getElementById('apItems').innerHTML=actions.map(function(a){
+    return '<div class="ap-item"><div class="ap-ii">'+a.icon+'</div><div class="ap-it"><b>'+a.label+'</b><span>'+a.text+'</span>'+
+      (a.urgency?'<span class="utag" style="background:'+a.uc+'22;color:'+a.uc+';">'+a.urgency+'</span>':'')+
+      '</div></div>';
+  }).join('');
+}
+
+function showBanner(score,prev,d){
+  if(bannerOff) return;
+  var drop=prev-score, cpu=d.cpu.total, mem=d.mem.pct, swap=d.mem.swap_pct;
+  var top=d.procs[0];
+  var topM=d.procs.slice().sort(function(a,b){return b.mem_pct-a.mem_pct;})[0];
+  var icon,bg,why,scrollTo;
+  if(cpu>85){icon='🔥';bg='#DC2626';why='Your processor just hit '+cpu.toFixed(0)+'% — "'+(top?top.name:'an app')+'" is the main cause. Think of your CPU like a chef: when one dish takes all their attention, everything else slows down.';scrollTo='problems';}
+  else if(mem>88){icon='🧠';bg='#7C3AED';why='Your RAM just hit '+mem+'% full. RAM is like your desk — when covered in papers you cannot work. "'+(topM?topM.name:'An app')+'" is taking the most space.';scrollTo='problems';}
+  else if(swap>15){icon='💾';bg='#D97706';why='Your RAM is completely full so your PC is now using your hard drive as backup. Hard drives are 100x slower than RAM — that is the lag you are feeling.';scrollTo='problems';}
+  else{icon='📉';bg='#374151';why='Several apps started competing for your PC\'s resources at the same time. This often happens when updates run in the background.';scrollTo='problems';}
+  var bn=document.getElementById('banner');
+  bn.style.background=bg; bn.style.color='white';
+  document.getElementById('bnIcon').textContent=icon;
+  document.getElementById('bnTitle').textContent='Performance dropped '+drop+' points — here\'s why';
+  document.getElementById('bnReason').textContent=why;
+  document.getElementById('bnActs').innerHTML=
+    '<button class="bab" onclick="hideBanner();goPage(\'health\',\'t1\');document.getElementById(\''+scrollTo+'\').scrollIntoView({behavior:\'smooth\'})">See how to fix it ↓</button>'+
+    '<button class="bab" onclick="hideBanner()">Dismiss</button>';
+  bn.style.display='block';
+  if(bnTimer) clearTimeout(bnTimer);
+  bnTimer=setTimeout(hideBanner,12000);
+}
+
+function hideBanner(){
+  document.getElementById('banner').style.display='none';
+  bannerOff=true;
+  setTimeout(function(){bannerOff=false;},30000);
+}
+
+function loadCompare(){
+  document.getElementById('cmpResult').innerHTML='<div style="color:var(--mu);font-size:.78rem;">Loading...</div>';
+  fetch('/api/compare?mode='+mode)
+    .then(function(r){return r.json();})
+    .then(function(data){cmpData=data;renderCompare(data);})
+    .catch(function(){document.getElementById('cmpResult').innerHTML='<div style="color:var(--red);font-size:.78rem;">Error</div>';});
+}
+
+function renderCompare(data){
+  var algos=data.algorithms, best=data.best_wt, html='<div class="ag">';
+  Object.keys(algos).forEach(function(name){
+    var a=algos[name].averages, isBest=name===best;
+    html+='<div class="ac'+(isBest?' best':'')+'" onclick="showGantt(\''+name+'\')">'+
+      '<div class="an">'+name+(isBest?' <span class="bt">BEST WT</span>':'')+'</div>'+
+      '<div class="ast">Avg Wait <b>'+a.avg_wt+'</b></div>'+
+      '<div class="ast">Avg TAT <b>'+a.avg_tat+'</b></div>'+
+      '<div class="ast">Avg Resp <b>'+a.avg_rt+'</b></div></div>';
+  });
+  html+='</div>';
+  document.getElementById('cmpResult').innerHTML=html;
+  document.getElementById('ganttSec').style.display='block';
+  document.getElementById('gBtns').innerHTML=Object.keys(algos).map(function(n){
+    return '<button class="btn btn-ghost btn-sm" onclick="showGantt(\''+n+'\')" id="gb-'+n+'">'+n+'</button>';
+  }).join('');
+  showGantt(Object.keys(algos)[0]);
+}
+
+function showGantt(name){
+  if(!cmpData) return;
+  document.querySelectorAll('#gBtns .btn').forEach(function(b){b.style.background='';b.style.color='';});
+  var ab=document.getElementById('gb-'+name);
+  if(ab){ab.style.background='var(--t)';ab.style.color='white';}
+  document.getElementById('gLabel').textContent=name;
+  var tl=cmpData.algorithms[name].timeline||[];
+  if(!tl.length) return;
+  var maxT=Math.max.apply(null,tl.map(function(s){return s.end;}));
+  var wrap=document.getElementById('gWrap');
+  var W=Math.max(500,wrap.parentElement.offsetWidth-20);
+  var scale=(W-20)/maxT;
+  var procs=[]; tl.forEach(function(s){if(procs.indexOf(s.pid)<0) procs.push(s.pid);});
+  var html='';
+  tl.forEach(function(seg){
+    var left=seg.start*scale, width=Math.max(2,(seg.end-seg.start)*scale-1);
+    html+='<div class="gseg" style="left:'+left+'px;width:'+width+'px;background:'+pc(procs.indexOf(seg.pid))+';" title="'+seg.pid+': '+seg.start+' to '+seg.end+'">'+(width>20?seg.pid:'')+'</div>';
+  });
+  var step=maxT<=20?1:maxT<=50?5:10;
+  for(var t=0;t<=maxT;t+=step) html+='<div class="gtickl" style="left:'+(t*scale)+'px"></div><div class="gtick" style="left:'+(t*scale)+'px">'+t+'</div>';
+  wrap.style.width=W+'px'; wrap.innerHTML=html;
+}
+
+function askFriendlyAI(){
+  var btn=document.getElementById('haib'), ct=document.getElementById('haic');
+  btn.disabled=true; btn.textContent='Analyzing...';
+  ct.innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--mu);font-size:.78rem;"><div class="spin"></div>Writing personalized advice for your PC...</div>';
+  fetch('/api/explain_friendly',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:mode})})
+    .then(function(r){return r.json();})
+    .then(function(data){ct.innerHTML='<div class="aic">'+fmtAI(data.explanation)+'</div>';})
+    .catch(function(e){ct.innerHTML='<div style="color:var(--red);font-size:.8rem;">Error: '+e.message+'</div>';});
+  btn.disabled=false; btn.innerHTML='⚡ Refresh Advice';
+}
+
+function askTechAI(){
+  var btn=document.getElementById('taib'), ct=document.getElementById('taic');
+  btn.disabled=true; btn.textContent='Analyzing...';
+  ct.innerHTML='<div style="display:flex;align-items:center;gap:8px;color:var(--mu);font-size:.78rem;"><div class="spin"></div>Analyzing your system snapshot...</div>';
+  fetch('/api/explain',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:mode})})
+    .then(function(r){return r.json();})
+    .then(function(data){
+      ct.innerHTML='<div class="aic">'+fmtAI(data.explanation)+'</div>';
+      document.getElementById('aiTs').textContent='Last analyzed: '+new Date().toLocaleTimeString();
+    })
+    .catch(function(e){ct.innerHTML='<div style="color:var(--red);font-size:.78rem;">Error: '+e.message+'</div>';});
+  btn.disabled=false; btn.innerHTML='⚡ Diagnose Again';
+}
+
+function fmtAI(t){
+  if(!t) return 'No response';
+  return t.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>');
+}
+
+fetchSnap();
+</script>
+</body>
+</html>
