@@ -1,8 +1,16 @@
-[README.md](https://github.com/user-attachments/files/27406889/README.md)
+
+
+[README (1.md](https://github.com/user-attachments/files/27409119/README.1.md)
 <div align="center">
 
+<img src="https://img.shields.io/badge/Python-3.x-blue?style=for-the-badge&logo=python&logoColor=white"/>
+<img src="https://img.shields.io/badge/Flask-Backend-black?style=for-the-badge&logo=flask&logoColor=white"/>
+<img src="https://img.shields.io/badge/Groq-LLaMA%203.1-orange?style=for-the-badge"/>
+<img src="https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-brightgreen?style=for-the-badge"/>
 
-```
+<br/><br/>
+
+# 🔬 ProcLens
 
 ### *Your computer finally explains itself.*
 
@@ -10,7 +18,13 @@
 
 <br/>
 
-[🚀 Get Started](#-quick-start) · [✨ Features](#-features) · [🧠 OS Concepts](#-os-concepts-demonstrated) · [📸 Screenshots](#-screenshots)
+[🚀 Get Started](#-quick-start)
+&nbsp;·&nbsp;
+[✨ Features](#-features)
+&nbsp;·&nbsp;
+[🧠 OS Concepts](#-os-concepts-demonstrated)
+&nbsp;·&nbsp;
+[📸 Screenshots](#-screenshots)
 
 </div>
 
@@ -24,31 +38,64 @@ Most people have no idea why their computer is slow. Task Manager shows numbers 
 
 It reads live data directly from your OS kernel, applies real CPU scheduling algorithms to your actual running processes, and uses AI to explain what's happening — whether you're a CS student, a developer, or someone who just wants their PC to run faster.
 
-> *Not a simulation. Not fake data. Your real computer, finally explained.*
+> 💬 *Not a simulation. Not fake data. Your real computer, finally explained.*
+
+---
+
+## 📸 Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="screenshot-health.png" alt="PC Health Tab" width="100%"/>
+      <br/>
+      <b>🩺 PC Health Tab</b>
+      <br/>
+      <sub>Plain-English diagnostics with live health score, smart fix cards, and AI-powered advice — no jargon</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="screenshot-dashboard.png" alt="Dashboard Tab" width="100%"/>
+      <br/>
+      <b>📊 Process Intelligence Dashboard</b>
+      <br/>
+      <sub>Live CPU/memory metrics, per-core utilization, Gantt chart, and real-time scheduling comparison</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
 ## ✨ Features
 
 ### 🩺 PC Health Tab — For Everyone
-- **Live health score** (0–100) that updates every 2 seconds
-- **Plain English diagnostics** — no jargon, no technical terms
-- **Smart problem cards** — every issue comes with numbered fix steps
-- **Clickable quick wins** — expand any card to see exactly what to do, with action buttons that open Task Manager, browser guides, and more
-- **Live health trend chart** — see how your PC performance changes over time
-- **Real-time alert banner** — pops up the moment performance drops with an explanation of exactly why
+
+| Feature | Description |
+|---|---|
+| 🎯 **Live Health Score** | 0–100 score updating every 2 seconds |
+| 📝 **Plain English Diagnostics** | No jargon, no technical terms |
+| 🃏 **Smart Problem Cards** | Every issue comes with numbered fix steps |
+| ⚡ **Clickable Quick Wins** | Expand any card to see exactly what to do, with action buttons |
+| 📈 **Live Health Trend Chart** | See how your PC performance changes over time |
+| 🚨 **Real-Time Alert Banner** | Pops up the moment performance drops — tells you exactly why |
 
 ### 📊 Dashboard Tab — For the Technical Audience
-- Live CPU usage per core, memory, swap, and process table
-- Real-time scheduling comparison — **FCFS, SJF, Round Robin** run simultaneously on your actual processes
-- Interactive Gantt chart — switch between algorithms and see how each one would have scheduled your workload
-- Process state distribution donut chart
-- Full process table: CPU%, memory, threads, I/O, PID, PPID
+
+| Feature | Description |
+|---|---|
+| 🖥️ **Live System Metrics** | CPU usage per core, memory, swap, and full process table |
+| ⚙️ **Scheduling Comparison** | FCFS, SJF, and Round Robin run simultaneously on your actual processes |
+| 📊 **Interactive Gantt Chart** | Switch between algorithms and see how each schedules your workload |
+| 🍩 **State Distribution Chart** | Process state breakdown in a real-time donut chart |
+| 📋 **Full Process Table** | CPU%, memory, threads, I/O, PID, PPID — all live |
 
 ### 🤖 AI Diagnostics — Powered by Groq (LLaMA 3.1)
-- **Friendly mode** — talks like a helpful friend, tells you exactly what to close and why
-- **Technical mode** — explains using OS theory: scheduling, thrashing, context switching, I/O wait
-- Analyses your live snapshot — not a generic answer
+
+| Mode | Description |
+|---|---|
+| 😊 **Friendly Mode** | Talks like a helpful friend — tells you exactly what to close and why |
+| 🔬 **Technical Mode** | Explains using OS theory: scheduling, thrashing, context switching, I/O wait |
+
+> Both modes analyse your **live snapshot**, not a generic answer.
 
 ---
 
@@ -56,18 +103,12 @@ It reads live data directly from your OS kernel, applies real CPU scheduling alg
 
 | Concept | Where You See It |
 |---|---|
-| CPU Scheduling (FCFS, SJF, RR) | Scheduling comparison + Gantt chart |
-| Process States | Process table + state distribution chart |
-| Memory Pressure & Thrashing | Memory metrics + AI diagnostics |
-| Context Switching | AI explanation engine |
-| I/O-bound vs CPU-bound processes | Process table + resource hog ranking |
-| Virtual Memory & Swap | Swap metrics + problem cards |
-
----
-
-## 📸 Screenshots
-
-
+| **CPU Scheduling** (FCFS, SJF, RR) | Scheduling comparison + Gantt chart |
+| **Process States** | Process table + state distribution chart |
+| **Memory Pressure & Thrashing** | Memory metrics + AI diagnostics |
+| **Context Switching** | AI explanation engine |
+| **I/O-bound vs CPU-bound processes** | Process table + resource hog ranking |
+| **Virtual Memory & Swap** | Swap metrics + problem cards |
 
 ---
 
@@ -86,7 +127,7 @@ pip install -r requirements.txt
 
 **3. Add your API key**
 
-Open `config.py` and add your [Groq API key](https://console.groq.com) (free, no credit card):
+Open `config.py` and add your [Groq API key](https://console.groq.com) (free, no credit card needed):
 ```python
 GROQ_API_KEY = "your-key-here"
 ```
@@ -136,12 +177,12 @@ proclens/
 
 | Layer | Technology |
 |---|---|
-| Backend | Python 3, Flask |
-| OS Data | psutil (cross-platform) |
-| Scheduling Engine | Custom Python — FCFS, SJF, Round Robin |
-| AI | Groq API — LLaMA 3.1 8B Instant |
-| Frontend | HTML, CSS, Vanilla JavaScript |
-| Charts | Chart.js |
+| **Backend** | Python 3, Flask |
+| **OS Data** | psutil (cross-platform) |
+| **Scheduling Engine** | Custom Python — FCFS, SJF, Round Robin |
+| **AI** | Groq API — LLaMA 3.1 8B Instant |
+| **Frontend** | HTML, CSS, Vanilla JavaScript |
+| **Charts** | Chart.js |
 
 ---
 
@@ -164,5 +205,7 @@ Built by **Nirnoy Charisma** as an Operating Systems course project.
 ---
 
 <div align="center">
-<sub>Built with Python · Flask · psutil · Chart.js · Groq AI</sub>
+
+<sub>Built with 🐍 Python · ⚡ Flask · 🖥️ psutil · 📊 Chart.js · 🤖 Groq AI</sub>
+
 </div>
